@@ -520,6 +520,10 @@ class gmoccapy(object):
         # get the values for the sliders
         self.rabbit_jog = self.get_ini_info.get_jog_vel()
         self.jog_rate_max = self.get_ini_info.get_max_jog_vel()
+
+        self.angular_jog_rate  self.get_ini_info.get_angular_jog_vel()
+        self.angular_jog_rate_max  self.get_ini_info.get_max_angular_jog_vel()
+        
         self.spindle_override_max = self.get_ini_info.get_max_spindle_override()
         self.spindle_override_min = self.get_ini_info.get_min_spindle_override()
         self.feed_override_max = self.get_ini_info.get_max_feed_override()
@@ -1040,6 +1044,10 @@ class gmoccapy(object):
         self.active_increment = "rbt_0" 
 
     def _jog_increment_changed(self, widget,):
+        # first cancel any joints jogging
+        JOGMODE = self._get_jog_mode()
+        for jnum in range(self.stat.joints):
+            self.command.jog(linuxcnc.JOG_STOP, JOGMODE, jnum)
         self.distance = self._parse_increment(widget.name)
         self.halcomp["jog.jog-increment"] = self.distance
         self.active_increment = widget.name
@@ -1637,6 +1645,10 @@ class gmoccapy(object):
         self.widgets.spc_lin_jog_vel.set_property("max", self.jog_rate_max)
         self.widgets.spc_lin_jog_vel.set_value(self.rabbit_jog)
 
+        self.widgets.spc_ang_jog_vel.set_property("min", 0)
+        self.widgets.spc_ang_jog_vel.set_property("max", self.jog_rate_max)
+        self.widgets.spc_ang_jog_vel.set_value(self.rabbit_jog)
+
         self.widgets.spc_spindle.set_property("min", self.spindle_override_min * 100)
         self.widgets.spc_spindle.set_property("max", self.spindle_override_max * 100)
         self.widgets.spc_spindle.set_value(100)
@@ -1649,7 +1661,7 @@ class gmoccapy(object):
         self.widgets.spc_feed.set_property("max", self.feed_override_max * 100)
         self.widgets.spc_feed.set_value(100)
 
-        # the scales to apply to the count of the hardware mpg wheel, to avoid to much turning
+        # the scales to apply to the count of the hardware mpg wheel, to avoid too much turning
         self.widgets.adj_scale_jog_vel.set_value(self.scale_jog_vel)
         self.widgets.adj_scale_spindle_override.set_value(self.scale_spindle_override)
         self.widgets.adj_scale_feed_override.set_value(self.scale_feed_override)

@@ -236,6 +236,21 @@ class GetIniInfo:
                 print("**** GMOCCAPY GETINIINFO **** \nNo DEFAULT_LINEAR_VELOCITY entry found in [TRAJ] of INI file\nUsing default value of 180 units / min")
         return float(temp) * 60
 
+    def get_angular_jog_vel(self):
+        # get default angular jog velocity
+        # must convert from INI's units per second to gscreen's units per minute
+        temp = self.inifile.find("TRAJ", "DEFAULT_ANGULAR_VELOCITY")
+        if not temp:
+            temp = self.inifile.find("TRAJ", "MAX_ANGULAR_VELOCITY" )
+            if temp:
+                temp = float(temp) / 2
+                print("**** GMOCCAPY GETINIINFO **** \nNo DEFAULT_LANGULAR_VELOCITY entry found in [TRAJ] of INI file\nUsing half on MAX_ANGULAR_VELOCITY")
+            else:
+                temp = 3.0
+                print("**** GMOCCAPY GETINIINFO **** \nNo DEFAULT_ANGULAR_VELOCITY entry found in [TRAJ] of INI file\nUsing default value of 180 units / min")
+        return float(temp) * 60
+
+
     def get_max_jog_vel(self):
         # get max jog velocity
         # must convert from INI's units per second to gscreen's units per minute
@@ -243,6 +258,15 @@ class GetIniInfo:
         if not temp:
             temp = 10.0
             print("**** GMOCCAPY GETINIINFO **** \nNo MAX_LINEAR_VELOCITY entry found in [TRAJ] of INI file\nUsing default value of 600 units / min")
+        return float(temp) * 60
+
+    def get_max_angular_jog_vel(self):
+        # get max angular jog velocity
+        # must convert from INI's units per second to gscreen's units per minute
+        temp = self.inifile.find("TRAJ", "MAX_ANGULAR_VELOCITY")
+        if not temp:
+            temp = 6.0
+            print("**** GMOCCAPY GETINIINFO **** \nNo MAX_ANGULAR_VELOCITY entry found in [TRAJ] of INI file\nUsing default value of 360 units / min")
         return float(temp) * 60
 
     def get_default_spindle_speed(self):
